@@ -8,5 +8,5 @@ setup(
     author_email='anaghkanungo7@gmail.com',
     description='Mutual Funds India Price Data',
     packages=find_packages(),    
-    install_requires=[bs4, pandas, requests, sqlalchemy],
+    install_requires=["bs4", "pandas", "requests", "sqlalchemy"],
 )
