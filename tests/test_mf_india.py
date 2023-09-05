@@ -4,7 +4,6 @@ from mfindia.main import getMarketSnapshot
 import pandas as pd
 
 class TestGetSnapshot(unittest.TestCase):
-
     def test_getSnapshot(self):
         date = datetime(2023, 1, 1)
         df = getMarketSnapshot(date)

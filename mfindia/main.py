@@ -47,3 +47,53 @@ def getMarketSnapshot(date):
     df = _parseString(raw_data)
     df = _preprocessData(df)
     return df
+
+
+def getLastPrice(schemeCode):
+    """Gets last price of a particular fund lookup by scheme code
+
+    Args:
+        schemeCode (string): String representation of scheme code
+
+    Returns:
+        float: Float value of the NAV of that fund today
+    """
+    date = datetime.today() - timedelta(days=1)
+    df = getMarketSnapshot(date)
+    df = df[df['Scheme Code'] == schemeCode]
+    return df['ticker_close'].iloc[0]
+
+
+def getMultipleFundsData(scheme_codes, date):
+    raw_data = _getRawData(date)
+    df = _parseString(raw_data)
+    df = _preprocessData(df)
+    
+    results = []
+    
+    for scheme_code in scheme_codes:
+        scheme_data = df[df['Scheme Code'] == scheme_code]
+        if not scheme_data.empty:
+            last_price = scheme_data['ticker_close'].iloc[0]
+            results.append({"scheme_code": scheme_code, "last_price": last_price})
+    
+    return results
+
+def getSimpleReturn(scheme_code, lookback_period):
+    end_date = datetime.today()
+    start_date = end_date - timedelta(days=lookback_period)
+    
+    df = getMarketSnapshot(end_date)
+    fund_data_start = df[(df['Scheme Code'] == scheme_code) & (df['Date'] == start_date)]
+    fund_data_end = df[(df['Scheme Code'] == scheme_code) & (df['Date'] == end_date)]
+    
+    if fund_data_start.empty or fund_data_end.empty:
+        return None  # Data not available for specified dates
+    
+    nav_start = float(fund_data_start['ticker_close'].iloc[0])
+    nav_end = float(fund_data_end['ticker_close'].iloc[0])
+    
+    simple_return = ((nav_end - nav_start) / nav_start) * 100
+    return simple_return
+
+
